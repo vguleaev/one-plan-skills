@@ -1,0 +1,3129 @@
+<!doctype html>
+<html lang="en" data-build="09b09b682e">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>API Gateway Bootstrap · Plan Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" media="(prefers-color-scheme: light)"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css" />
+  <link rel="stylesheet" media="(prefers-color-scheme: dark)"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css" />
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --fg: #171717;
+      --fg-2: #525252;
+      --fg-3: #8a8a8a;
+      --border: #e5e5e5;
+      --border-strong: #d4d4d4;
+      --accent: #171717;
+      --accent-fg: #ffffff;
+      --done: #16a34a;
+      --done-bg: #f0fdf4;
+      --todo: #737373;
+      --todo-bg: #f5f5f5;
+      --changes: #d97706;
+      --changes-bg: #fffbeb;
+      --code-bg: #f4f4f5;
+      --remove: #ef4444;
+      --remove-bg: #fef2f2;
+      --add-line: rgba(22, 163, 74, .12);
+      --del-line: rgba(239, 68, 68, .12);
+      --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 8px 24px -12px rgba(0, 0, 0, .12);
+      --radius: 12px;
+      --sans: "Geist", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+      --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0a0a0a;
+        --surface: #111111;
+        --fg: #ededed;
+        --fg-2: #a3a3a3;
+        --fg-3: #737373;
+        --border: #262626;
+        --border-strong: #333333;
+        --accent: #ededed;
+        --accent-fg: #0a0a0a;
+        --done: #4ade80;
+        --done-bg: rgba(74, 222, 128, .1);
+        --todo: #a3a3a3;
+        --todo-bg: #1a1a1a;
+        --changes: #fbbf24;
+        --changes-bg: rgba(251, 191, 36, .1);
+        --code-bg: #1a1a1a;
+        --remove: #f87171;
+        --remove-bg: rgba(248, 113, 113, .1);
+        --add-line: rgba(74, 222, 128, .14);
+        --del-line: rgba(248, 113, 113, .16);
+        --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -12px rgba(0, 0, 0, .6);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-color: var(--border-strong);
+      text-underline-offset: 3px;
+    }
+
+    a:hover {
+      text-decoration-color: var(--fg);
+    }
+
+    code {
+      font-family: var(--mono);
+      font-size: .86em;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: .1em .38em;
+      white-space: nowrap;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+      background: none;
+      border: 0;
+      padding: 0;
+    }
+
+    button:focus-visible,
+    textarea:focus-visible,
+    input:focus-visible {
+      outline: 2px solid var(--fg);
+      outline-offset: 2px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: color-mix(in srgb, var(--bg) 82%, transparent);
+      backdrop-filter: saturate(180%) blur(12px);
+      -webkit-backdrop-filter: saturate(180%) blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar-inner {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+      font-size: 14px;
+      min-width: 0;
+    }
+
+    .brand-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--fg);
+      flex: none;
+    }
+
+    .brand span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    .meter {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--fg-2);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .meter-track {
+      width: 96px;
+      height: 4px;
+      border-radius: 99px;
+      background: var(--border);
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      height: 100%;
+      background: var(--done);
+      border-radius: 99px;
+      transition: width .4s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 34px;
+      padding: 0 13px;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      font-size: 13.5px;
+      font-weight: 500;
+      line-height: 1;
+      transition: background .15s, border-color .15s, color .15s, transform .1s;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      border-color: var(--fg-3);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--accent-fg);
+      border-color: var(--accent);
+    }
+
+    .btn-primary:hover {
+      opacity: .9;
+      border-color: var(--accent);
+    }
+
+    .btn-ghost {
+      border-color: transparent;
+      background: transparent;
+      color: var(--fg-2);
+    }
+
+    .btn-ghost:hover {
+      background: var(--todo-bg);
+      color: var(--fg);
+      border-color: transparent;
+    }
+
+    .btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 99px;
+      background: var(--accent);
+      color: var(--accent-fg);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .btn-primary .badge {
+      background: var(--accent-fg);
+      color: var(--accent);
+    }
+
+    .badge[hidden] {
+      display: none;
+    }
+
+    main {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 56px 24px 160px;
+    }
+
+    .hero {
+      margin-bottom: 40px;
+    }
+
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--fg-3);
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: 34px;
+      line-height: 1.15;
+      letter-spacing: -.025em;
+      font-weight: 600;
+      margin: 0 0 16px;
+    }
+
+    .lede {
+      font-size: 16.5px;
+      color: var(--fg-2);
+      margin: 0;
+      max-width: 640px;
+    }
+
+    .section-label {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--fg-3);
+      letter-spacing: .01em;
+      margin: 48px 0 14px;
+    }
+
+    .section-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .tracker {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .tracker-row {
+      display: grid;
+      grid-template-columns: 64px 1fr auto;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 18px;
+      border-top: 1px solid var(--border);
+      text-decoration: none;
+      transition: background .15s;
+    }
+
+    .tracker-row:first-child {
+      border-top: 0;
+    }
+
+    .tracker-row:hover {
+      background: var(--bg);
+    }
+
+    .tracker-id {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: var(--fg-3);
+    }
+
+    .tracker-desc {
+      font-size: 14.5px;
+    }
+
+    .tracker-flags {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 24px;
+      padding: 0 9px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .pill::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .pill-done {
+      color: var(--done);
+      background: var(--done-bg);
+    }
+
+    .pill-todo {
+      color: var(--todo);
+      background: var(--todo-bg);
+    }
+
+    .pill-changes {
+      color: var(--changes);
+      background: var(--changes-bg);
+    }
+
+    .pill-approve {
+      color: var(--done);
+      background: var(--done-bg);
+    }
+
+    .pill-remove {
+      color: var(--remove);
+      background: var(--remove-bg);
+    }
+
+    .pill-stale {
+      color: var(--changes);
+      background: var(--changes-bg);
+      border: 1px dashed color-mix(in srgb, var(--changes) 50%, transparent);
+      cursor: pointer;
+    }
+
+    .pill-stale:hover {
+      background: color-mix(in srgb, var(--changes) 18%, transparent);
+    }
+
+    .pill-stale::before {
+      display: none;
+    }
+
+    .pill-stale svg {
+      width: 11px;
+      height: 11px;
+    }
+
+    .ticket {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+      scroll-margin-top: 80px;
+      transition: border-color .2s;
+    }
+
+    .ticket[data-verdict="changes"] {
+      border-color: var(--changes);
+    }
+
+    .ticket[data-verdict="approve"] {
+      border-color: var(--done);
+    }
+
+    .ticket[data-verdict="remove"] {
+      border-color: var(--remove);
+    }
+
+    .ticket[data-verdict="remove"] .ticket-title {
+      text-decoration: line-through;
+      opacity: .55;
+    }
+
+    .ticket-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 22px 24px 0;
+    }
+
+    .ticket-id {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: var(--fg-3);
+      padding-top: 4px;
+      min-width: 40px;
+    }
+
+    .ticket-title {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -.015em;
+      margin: 0;
+      line-height: 1.35;
+      flex: 1;
+    }
+
+    .ticket-body {
+      padding: 14px 24px 22px 78px;
+    }
+
+    .ticket-desc {
+      color: var(--fg-2);
+      margin: 0;
+      font-size: 14.5px;
+    }
+
+    .desc-block {
+      margin-bottom: 16px;
+    }
+
+    .desc-block:last-of-type {
+      margin-bottom: 20px;
+    }
+
+    .desc-block-inner {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .desc-block-inner .ticket-desc {
+      flex: 1;
+    }
+
+    .desc-note-btn {
+      flex: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      color: var(--fg-3);
+      opacity: 0;
+      transition: opacity .15s, background .15s, color .15s;
+      position: relative;
+      margin-top: 1px;
+    }
+
+    .desc-block:hover .desc-note-btn,
+    .desc-note-btn:focus-visible,
+    .desc-note-btn.has-note,
+    .desc-block.open .desc-note-btn {
+      opacity: 1;
+    }
+
+    .desc-note-btn:hover,
+    .desc-block.open .desc-note-btn {
+      background: var(--todo-bg);
+      color: var(--fg);
+    }
+
+    .desc-note-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .desc-note-btn.has-note::after {
+      content: "";
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--changes);
+      border: 1.5px solid var(--surface);
+    }
+
+    .desc-note {
+      display: none;
+      padding: 6px 0 0 0;
+    }
+
+    .desc-block.open .desc-note {
+      display: block;
+    }
+
+    .desc-strike-btn {
+      flex: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      color: var(--fg-3);
+      opacity: 0;
+      transition: opacity .15s, background .15s, color .15s;
+      margin-top: 1px;
+    }
+
+    .desc-block:hover .desc-strike-btn,
+    .desc-strike-btn:focus-visible,
+    .desc-strike-btn.active {
+      opacity: 1;
+    }
+
+    .desc-strike-btn:hover {
+      background: var(--remove-bg);
+      color: var(--remove);
+    }
+
+    .desc-strike-btn.active {
+      background: var(--remove-bg);
+      color: var(--remove);
+    }
+
+    .desc-strike-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .desc-block-inner .desc-strike-btn,
+    .desc-block-inner .desc-note-btn,
+    .note-row .desc-strike-btn,
+    .note-row .desc-note-btn {
+      order: 1;
+    }
+
+    .desc-block-inner .desc-strike-btn.active,
+    .note-row .desc-strike-btn.active {
+      order: 2;
+    }
+
+    .desc-block-inner .desc-note-btn.has-note,
+    .note-row .desc-note-btn.has-note {
+      order: 2;
+    }
+
+    .desc-block.striked .ticket-desc {
+      text-decoration: line-through;
+      opacity: .45;
+    }
+
+    .desc-block.striked .code-block {
+      opacity: .45;
+      border-color: var(--remove);
+    }
+
+    .code-block {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--code-bg);
+      overflow: hidden;
+    }
+
+    .code-block-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-block-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .code-lang {
+      font-family: var(--mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--fg-3);
+    }
+
+    .code-copy {
+      font-family: var(--sans);
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--fg-3);
+      padding: 3px 8px;
+      border-radius: 6px;
+      transition: background .15s, color .15s;
+    }
+
+    .code-copy:hover {
+      background: var(--surface);
+      color: var(--fg);
+    }
+
+    .code-block pre {
+      margin: 0;
+      padding: 14px 16px;
+      overflow: auto;
+    }
+
+    .code-block code {
+      display: block;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.65;
+      white-space: pre;
+      background: none;
+      border: 0;
+      border-radius: 0;
+      padding: 0;
+      color: var(--fg);
+    }
+
+    .hljs {
+      background: transparent !important;
+      padding: 0 !important;
+    }
+
+    .files {
+      margin: 4px 0 20px;
+    }
+
+    .file-tabs {
+      display: flex;
+      gap: 2px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      border: 1px solid var(--border);
+      border-bottom: 0;
+      border-radius: 10px 10px 0 0;
+      background: var(--todo-bg);
+      padding: 4px 4px 0;
+    }
+
+    .file-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .file-tab {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 7px 7px 0 0;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--fg-3);
+      border: 1px solid transparent;
+      border-bottom: 0;
+      transition: color .15s, background .15s;
+    }
+
+    .file-tab:hover {
+      color: var(--fg);
+    }
+
+    .file-tab.active {
+      background: var(--code-bg);
+      color: var(--fg);
+      border-color: var(--border);
+      margin-bottom: -1px;
+      padding-bottom: 1px;
+    }
+
+    .file-dot {
+      flex: none;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--fs);
+    }
+
+    .file-tab[data-status="deleted"] .file-name {
+      text-decoration: line-through;
+      opacity: .7;
+    }
+
+    [data-status="new"] {
+      --fs: var(--done);
+      --fs-bg: var(--done-bg);
+    }
+
+    [data-status="modified"] {
+      --fs: var(--changes);
+      --fs-bg: var(--changes-bg);
+    }
+
+    [data-status="deleted"] {
+      --fs: var(--remove);
+      --fs-bg: var(--remove-bg);
+    }
+
+    .file-panel {
+      display: none;
+      border: 1px solid var(--border);
+      border-radius: 0 0 10px 10px;
+      background: var(--code-bg);
+      overflow: hidden;
+    }
+
+    .file-panel.active {
+      display: block;
+    }
+
+    .file-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 12px;
+      border-bottom: 1px solid var(--border);
+      min-width: 0;
+    }
+
+    .file-path {
+      flex: 1;
+      min-width: 0;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--fg-2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-status {
+      flex: none;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 99px;
+      color: var(--fs);
+      background: var(--fs-bg);
+    }
+
+    .file-body {
+      overflow: auto;
+      max-height: 420px;
+      padding: 10px 0;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--fg);
+    }
+
+    .cl {
+      display: flex;
+      min-width: max-content;
+      padding-right: 16px;
+    }
+
+    .cg {
+      flex: none;
+      width: 44px;
+      padding-right: 12px;
+      text-align: right;
+      color: var(--fg-3);
+      opacity: .7;
+      user-select: none;
+    }
+
+    .ct {
+      white-space: pre;
+    }
+
+    .cl.add {
+      background: var(--add-line);
+    }
+
+    .cl.add .cg {
+      color: var(--done);
+      opacity: 1;
+    }
+
+    .cl.del {
+      background: var(--del-line);
+    }
+
+    .cl.del .cg {
+      color: var(--remove);
+      opacity: 1;
+    }
+
+    .file-gone {
+      padding: 22px 16px;
+      font-size: 13.5px;
+      color: var(--fg-3);
+    }
+
+    .files {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .files-warn {
+      margin: 0 0 8px;
+      padding: 7px 11px;
+      border-radius: 8px;
+      border: 1px dashed color-mix(in srgb, var(--changes) 55%, transparent);
+      background: var(--changes-bg);
+      color: var(--changes);
+      font-size: 12.5px;
+    }
+
+    .file-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 9px 12px;
+      border-top: 1px solid var(--border);
+      background: var(--code-bg);
+      text-align: left;
+      min-width: 0;
+      transition: background .15s;
+    }
+
+    .file-row:first-child {
+      border-top: 0;
+    }
+
+    button.file-row:hover {
+      background: var(--todo-bg);
+    }
+
+    .file-row.static {
+      opacity: .85;
+    }
+
+    .file-row-path {
+      flex: 1;
+      min-width: 0;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-row.static .file-row-path {
+      text-decoration: line-through;
+    }
+
+    .file-row-stat {
+      flex: none;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--fg-3);
+      white-space: nowrap;
+    }
+
+    .stat-add {
+      color: var(--done);
+    }
+
+    .stat-del {
+      color: var(--remove);
+    }
+
+    .file-row-go {
+      flex: none;
+      width: 14px;
+      height: 14px;
+      color: var(--fg-3);
+    }
+
+    .fv {
+      position: fixed;
+      inset: 0;
+      z-index: 35;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(0, 0, 0, .5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .fv[hidden] {
+      display: none;
+    }
+
+    .fv-card {
+      display: flex;
+      flex-direction: column;
+      width: min(1180px, 100%);
+      height: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .55);
+      overflow: hidden;
+    }
+
+    .fv-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .fv-title {
+      flex: 1;
+      min-width: 0;
+      font-size: 14.5px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .fv-title .ticket-id {
+      padding-top: 0;
+      margin-right: 6px;
+    }
+
+    .fv-tabs {
+      border-left: 0;
+      border-right: 0;
+      border-radius: 0;
+      padding: 6px 12px 0;
+    }
+
+    .fv-panels {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .fv .file-panel {
+      border: 0;
+      border-radius: 0;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .fv .file-panel.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .fv .file-head {
+      padding: 9px 16px;
+    }
+
+    .fv .file-body {
+      flex: 1;
+      min-height: 0;
+      max-height: none;
+      padding: 14px 0;
+      font-size: 13.5px;
+    }
+
+    .fv .file-gone {
+      padding: 40px 20px;
+    }
+
+    .ac-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--fg-3);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 8px;
+    }
+
+    .ac-list {
+      list-style: none;
+      margin: 0 0 12px;
+      padding: 0;
+    }
+
+    .ac {
+      border-top: 1px solid var(--border);
+    }
+
+    .ac-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 9px 0;
+    }
+
+    .ac-box {
+      flex: none;
+      width: 16px;
+      height: 16px;
+      margin-top: 4px;
+      border-radius: 4px;
+      border: 1.5px solid var(--border-strong);
+      display: grid;
+      place-items: center;
+      color: var(--accent-fg);
+    }
+
+    .ac-box.on {
+      background: var(--done);
+      border-color: var(--done);
+    }
+
+    .ac-box svg {
+      width: 10px;
+      height: 10px;
+    }
+
+    .ac-text {
+      flex: 1;
+      font-size: 14.5px;
+    }
+
+    .ac-box.on+.ac-text {
+      color: var(--fg-2);
+    }
+
+    .ac-note-btn {
+      flex: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      color: var(--fg-3);
+      opacity: 0;
+      transition: opacity .15s, background .15s, color .15s;
+      position: relative;
+    }
+
+    .ac:hover .ac-note-btn,
+    .ac-note-btn:focus-visible,
+    .ac-note-btn.has-note,
+    .ac.open .ac-note-btn {
+      opacity: 1;
+    }
+
+    .ac-note-btn:hover,
+    .ac.open .ac-note-btn {
+      background: var(--todo-bg);
+      color: var(--fg);
+    }
+
+    .ac-note-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .ac-note-btn.has-note::after {
+      content: "";
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--changes);
+      border: 1.5px solid var(--surface);
+    }
+
+    .ac-note {
+      display: none;
+      padding: 0 0 12px 28px;
+    }
+
+    .ac.open .ac-note {
+      display: block;
+    }
+
+    .ac-strike-btn {
+      flex: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      color: var(--fg-3);
+      opacity: 0;
+      transition: opacity .15s, background .15s, color .15s;
+    }
+
+    .ac:hover .ac-strike-btn,
+    .ac-strike-btn:focus-visible,
+    .ac-strike-btn.active {
+      opacity: 1;
+    }
+
+    .ac-strike-btn:hover,
+    .ac-strike-btn.active {
+      background: var(--remove-bg);
+      color: var(--remove);
+    }
+
+    .ac-strike-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .ac-row .ac-strike-btn,
+    .ac-row .ac-note-btn {
+      order: 1;
+    }
+
+    .ac-row .ac-strike-btn.active {
+      order: 2;
+    }
+
+    .ac-row .ac-note-btn.has-note {
+      order: 2;
+    }
+
+    .ac.striked .ac-text {
+      text-decoration: line-through;
+      opacity: .45;
+    }
+
+    .ac.striked .ac-box {
+      opacity: .45;
+    }
+
+    textarea,
+    input[type="text"] {
+      width: 100%;
+      font: inherit;
+      color: var(--fg);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 14px;
+      line-height: 1.55;
+      resize: none;
+      color-scheme: light dark;
+      transition: border-color .15s, background .15s;
+    }
+
+    textarea::placeholder,
+    input::placeholder {
+      color: var(--fg-3);
+    }
+
+    textarea:hover,
+    input[type="text"]:hover {
+      border-color: var(--border-strong);
+    }
+
+    textarea:focus,
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--fg-3);
+      background: var(--surface);
+    }
+
+    textarea:not(:placeholder-shown),
+    input[type="text"]:not(:placeholder-shown) {
+      border-color: var(--changes);
+    }
+
+    .ac-note textarea {
+      padding: 7px 11px;
+      font-size: 13.5px;
+    }
+
+    .feedback {
+      border-top: 1px dashed var(--border);
+      padding-top: 15px;
+    }
+
+    .feedback-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .review-toggle-btn {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 28px;
+      padding: 0 10px 0 8px;
+      border-radius: 7px;
+      color: var(--fg-2);
+      font-size: 13px;
+      font-weight: 500;
+      transition: background .15s, color .15s;
+      position: relative;
+    }
+
+    .review-toggle-btn:hover,
+    .review-toggle-btn.active {
+      background: var(--todo-bg);
+      color: var(--fg);
+    }
+
+    .review-toggle-btn svg {
+      flex: none;
+      width: 14px;
+      height: 14px;
+      color: var(--fg-3);
+    }
+
+    .review-toggle-btn.has-review::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--changes);
+      border: 1.5px solid var(--surface);
+    }
+
+    .feedback>textarea {
+      display: none;
+    }
+
+    .feedback.open>textarea {
+      display: block;
+    }
+
+    .segment {
+      display: inline-flex;
+      padding: 3px;
+      background: var(--todo-bg);
+      border-radius: 9px;
+      border: 1px solid var(--border);
+    }
+
+    .seg {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 28px;
+      padding: 0 11px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--fg-2);
+      transition: background .15s, color .15s, box-shadow .15s;
+    }
+
+    .seg svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .seg:hover {
+      color: var(--fg);
+    }
+
+    .seg.active {
+      background: var(--surface);
+      color: var(--fg);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .08);
+    }
+
+    .seg.active[data-verdict="approve"] {
+      color: var(--done);
+    }
+
+    .seg.active[data-verdict="changes"] {
+      color: var(--changes);
+    }
+
+    .seg.active[data-verdict="remove"] {
+      color: var(--remove);
+    }
+
+    .notes-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      padding: 6px 24px;
+    }
+
+    .notes-card ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .notes-card li {
+      padding: 12px 0 12px 22px;
+      border-top: 1px solid var(--border);
+      color: var(--fg-2);
+      font-size: 14.5px;
+      position: relative;
+    }
+
+    .notes-card li:first-child {
+      border-top: 0;
+    }
+
+    .notes-card li::before {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 22px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--fg-3);
+    }
+
+    .note-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .note-text {
+      flex: 1;
+      margin: 0;
+    }
+
+    .notes-card li:hover .desc-note-btn,
+    .notes-card li.open .desc-note-btn {
+      opacity: 1;
+    }
+
+    .notes-card li:hover .desc-strike-btn {
+      opacity: 1;
+    }
+
+    .notes-card li.open .desc-note {
+      display: block;
+    }
+
+    .notes-card li.striked .note-text {
+      text-decoration: line-through;
+      opacity: .45;
+    }
+
+    #notes-section {
+      scroll-margin-top: 80px;
+    }
+
+    .footer-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+
+    .clear-fab {
+      position: fixed;
+      bottom: 17px;
+      left: 68px;
+      z-index: 26;
+    }
+
+    .feedback-tab {
+      position: fixed;
+      left: 12px;
+      bottom: 12px;
+      z-index: 45;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--accent);
+      color: var(--accent-fg);
+      box-shadow: 0 8px 24px -8px rgba(0, 0, 0, .45);
+      transition: transform .15s, opacity .2s;
+    }
+
+    .feedback-tab:hover {
+      transform: scale(1.06);
+    }
+
+    .feedback-tab svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .feedback-tab.has-note::after {
+      content: "";
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--changes);
+      border: 2px solid var(--accent);
+    }
+
+    body.sheet-open .feedback-tab {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .clear-fab[hidden] {
+      display: none;
+    }
+
+    .sheet {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%) translateY(110%);
+      width: min(780px, calc(100vw - 32px));
+      z-index: 25;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: transform .25s ease, opacity .2s ease, visibility 0s .25s;
+    }
+
+    .sheet.show {
+      transform: translateX(-50%);
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transition: transform .25s ease, opacity .2s ease, visibility 0s;
+    }
+
+    .sheet-panel {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-bottom: none;
+      border-radius: 14px 14px 0 0;
+      box-shadow: 0 -10px 24px -6px rgba(0, 0, 0, .22), 0 -28px 60px -22px rgba(0, 0, 0, .35);
+      overflow: hidden;
+    }
+
+    .sheet-bar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 16px;
+      text-align: left;
+      transition: background .15s;
+      background: var(--surface);
+      color: var(--fg);
+      border-bottom: 1px solid transparent;
+    }
+
+    .sheet-bar:hover {
+      background: var(--todo-bg);
+    }
+
+    .sheet.open .sheet-bar {
+      border-bottom-color: var(--border);
+    }
+
+    .sheet-bar-icon {
+      flex: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #ffffff;
+      border: 1px solid var(--border-strong);
+      color: #171717;
+    }
+
+    .sheet-bar-icon svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .sheet-bar-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      flex: 1;
+      min-width: 0;
+      color: var(--fg);
+    }
+
+    .sheet-bar .badge {
+      background: var(--changes-bg);
+      color: var(--changes);
+      border: 2px solid var(--changes);
+    }
+
+    .sheet-chevron {
+      flex: none;
+      width: 14px;
+      height: 14px;
+      color: var(--fg-3);
+      transition: transform .25s ease;
+    }
+
+    .sheet.open .sheet-chevron {
+      transform: rotate(180deg);
+    }
+
+    .sheet-body {
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 16px;
+      transition: max-height .3s ease, padding-top .3s ease, padding-bottom .3s ease;
+    }
+
+    .sheet.open .sheet-body {
+      max-height: min(50vh, 320px);
+      overflow-y: auto;
+      padding: 6px 16px 16px;
+    }
+
+    .sheet-body textarea {
+      margin: 0;
+      max-height: min(40vh, 260px);
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+
+    .sheet-body textarea::-webkit-scrollbar {
+      display: none;
+    }
+
+    .side-nav {
+      position: fixed;
+      left: 24px;
+      top: 50%;
+      z-index: 15;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      width: 360px;
+      padding: 10px 6px;
+      border-radius: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-50%) translateX(-14px);
+      transition: opacity .25s ease, transform .25s ease;
+    }
+
+    .side-nav.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(-50%) translateX(0);
+    }
+
+    .side-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--fg-2);
+      opacity: .6;
+      transition: opacity .15s, background .15s;
+    }
+
+    .side-nav-item:hover,
+    .side-nav-item.active {
+      opacity: 1;
+    }
+
+    .side-nav-item:hover {
+      background: var(--todo-bg);
+    }
+
+    .side-nav-dot {
+      flex: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-family: var(--mono);
+      font-size: 10.5px;
+      font-weight: 600;
+      border: 1.5px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--fg-2);
+      transition: background .2s, border-color .2s, color .2s, transform .2s;
+    }
+
+    .side-nav-dot svg {
+      width: 11px;
+      height: 11px;
+    }
+
+    .side-nav-item.done .side-nav-dot {
+      background: var(--done-bg);
+      border-color: var(--done);
+      color: var(--done);
+    }
+
+    .side-nav-item.active .side-nav-dot {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--accent-fg);
+      transform: scale(1.08);
+    }
+
+    .side-nav-item.verdict-approve .side-nav-dot {
+      border-color: var(--done);
+    }
+
+    .side-nav-item.verdict-changes .side-nav-dot {
+      border-color: var(--changes);
+    }
+
+    .side-nav-item.verdict-remove .side-nav-dot {
+      border-color: var(--remove);
+    }
+
+    .side-nav-label {
+      flex: 1;
+      min-width: 0;
+      font-family: var(--mono);
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 1;
+      margin-left: 8px;
+    }
+
+    .nav-toggle {
+      display: none;
+    }
+
+    /* 360px bar + 24px offset must fit left of the centered 780px column: (vw - 780) / 2 >= 360 + 24 + ~16.
+       Below that the bar becomes a tab on the left edge that opens the map for a single click. */
+    @media (max-width: 1599px) {
+      .nav-toggle {
+        position: fixed;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%) translateX(-100%);
+        z-index: 16;
+        width: 30px;
+        height: 60px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--border-strong);
+        border-left: 0;
+        border-radius: 0 10px 10px 0;
+        background: var(--surface);
+        color: var(--fg-2);
+        box-shadow: var(--shadow);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .25s ease, transform .25s ease, color .15s;
+      }
+
+      body.nav-passed .nav-toggle {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(-50%);
+      }
+
+      .nav-toggle:hover,
+      .nav-toggle[aria-expanded="true"] {
+        color: var(--fg);
+      }
+
+      .nav-toggle svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      .side-nav,
+      .side-nav.visible {
+        left: 40px;
+        width: min(360px, calc(100vw - 56px));
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-50%) translateX(-14px);
+      }
+
+      .side-nav.open,
+      .side-nav.visible.open {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(-50%) translateX(0);
+      }
+    }
+
+    .ask-fab {
+      position: fixed;
+      right: 12px;
+      bottom: 12px;
+      z-index: 45;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--accent);
+      color: var(--accent-fg);
+      font-size: 20px;
+      font-weight: 600;
+      box-shadow: 0 8px 24px -8px rgba(0, 0, 0, .45);
+      transition: transform .15s, background .15s, color .15s;
+    }
+
+    .ask-fab:hover {
+      transform: scale(1.06);
+    }
+
+    body.ask-mode .ask-fab {
+      background: var(--changes);
+      color: #1a1100;
+    }
+
+    .ask-banner {
+      position: fixed;
+      top: 62px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 46;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      border-radius: 99px;
+      background: var(--changes);
+      color: #1a1100;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 8px 24px -10px rgba(0, 0, 0, .5);
+      white-space: nowrap;
+    }
+
+    body.ask-mode .ask-banner {
+      display: flex;
+    }
+
+    body.ask-mode,
+    body.ask-mode * {
+      cursor: help !important;
+    }
+
+    body.ask-mode .ask-ui,
+    body.ask-mode .ask-ui * {
+      cursor: auto !important;
+    }
+
+    body.ask-mode .ask-ui button,
+    body.ask-mode .ask-fab {
+      cursor: pointer !important;
+    }
+
+    .ask-hover {
+      outline: 2px dashed var(--changes);
+      outline-offset: 2px;
+      background-color: color-mix(in srgb, var(--changes) 10%, transparent);
+    }
+
+    .ask-target {
+      outline: 2px solid var(--changes);
+      outline-offset: 2px;
+    }
+
+    .ask-pop {
+      position: fixed;
+      z-index: 50;
+      width: min(380px, calc(100vw - 24px));
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      box-shadow: 0 24px 60px -16px rgba(0, 0, 0, .5);
+      padding: 12px;
+    }
+
+    .ask-pop[hidden] {
+      display: none;
+    }
+
+    .ask-where {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--fg-2);
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .ask-snippet {
+      margin: 6px 0 10px;
+      padding: 6px 9px;
+      border-left: 2px solid var(--border-strong);
+      font-size: 12.5px;
+      color: var(--fg-3);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      white-space: pre-wrap;
+      font-family: var(--mono);
+    }
+
+    .ask-foot {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .ask-foot .hint {
+      font-size: 11.5px;
+    }
+
+    .hint {
+      font-size: 13px;
+      color: var(--fg-3);
+      margin-left: auto;
+    }
+
+    kbd {
+      font-family: var(--mono);
+      font-size: 11px;
+      border: 1px solid var(--border-strong);
+      border-bottom-width: 2px;
+      border-radius: 5px;
+      padding: 1px 5px;
+      color: var(--fg-2);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      transform: translate(-50%, 16px);
+      background: var(--accent);
+      color: var(--accent-fg);
+      font-size: 13.5px;
+      font-weight: 500;
+      padding: 10px 16px;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, .4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s, transform .25s cubic-bezier(.2, .8, .2, 1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 60;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .toast svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    dialog {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+      color: var(--fg);
+      padding: 0;
+      width: min(720px, calc(100vw - 32px));
+      box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .4);
+    }
+
+    dialog::backdrop {
+      background: rgba(0, 0, 0, .4);
+      backdrop-filter: blur(4px);
+    }
+
+    .dialog-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dialog-head h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .dialog-body {
+      padding: 0;
+    }
+
+    .dialog-body pre {
+      margin: 0;
+      padding: 20px;
+      max-height: 60vh;
+      overflow: auto;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.65;
+      color: var(--fg-2);
+      white-space: pre-wrap;
+    }
+
+    .dialog-foot {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .btn[hidden] {
+      display: none;
+    }
+
+    @media (max-width: 640px) {
+      main {
+        padding: 40px 18px 140px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .ticket-body {
+        padding-left: 24px;
+      }
+
+      .ticket-head {
+        padding: 18px 20px 0;
+      }
+
+      .meter {
+        display: none;
+      }
+
+      .topbar-inner {
+        padding: 10px 18px;
+      }
+
+      .tracker-row {
+        grid-template-columns: 52px 1fr auto;
+        padding: 12px 14px;
+      }
+
+      .ac-note-btn {
+        opacity: 1;
+      }
+
+      .feedback-tab {
+        left: 12px;
+      }
+
+      .clear-fab {
+        bottom: 17px;
+        left: 68px;
+      }
+
+      .sheet-bar-title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><span class="brand-dot"></span><span id="brand-title"></span></div>
+      <div class="spacer"></div>
+      <div class="meter">
+        <span id="meter-text">0 / 0 done</span>
+        <div class="meter-track">
+          <div class="meter-fill" id="meter-fill"></div>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="export-btn">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M8 2v8M5 7l3 3 3-3M3 12v1.5h10V12" />
+        </svg>
+        Export feedback
+        <span class="badge" id="feedback-count" hidden>0</span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="side-nav" id="side-nav" aria-label="Jump to task"></nav>
+  <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Open task map" aria-expanded="false"
+    title="Task map">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
+      stroke-linejoin="round">
+      <path d="M2.5 4h11M2.5 8h11M2.5 12h7" />
+    </svg>
+  </button>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow" id="eyebrow"></div>
+      <h1 id="title"></h1>
+      <p class="lede" id="lede"></p>
+    </section>
+
+    <div class="section-label">Progress</div>
+    <nav class="tracker" id="tracker"></nav>
+
+    <div class="section-label">Tasks</div>
+    <div id="tickets"></div>
+
+    <div class="section-label">Notes</div>
+    <div class="notes-card" id="notes-section" data-id="notes-section">
+      <ul id="notes"></ul>
+    </div>
+
+    <div class="footer-actions">
+      <button class="btn btn-primary" id="export-btn-2">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M8 2v8M5 7l3 3 3-3M3 12v1.5h10V12" />
+        </svg>
+        Export feedback
+      </button>
+      <span class="hint" id="hint">Autosaved locally · <kbd>⌘</kbd> <kbd>E</kbd> to export</span>
+    </div>
+  </main>
+
+  <button class="btn btn-primary clear-fab" id="reset-btn" hidden>Clear all feedback <span class="badge"
+      id="reset-count">0</span></button>
+
+  <button class="feedback-tab" id="feedback-tab" type="button" aria-label="General feedback" aria-expanded="false"
+    title="General feedback">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+      stroke-linejoin="round">
+      <path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z" />
+    </svg>
+  </button>
+
+  <div class="sheet" id="feedback-sheet">
+    <div class="sheet-panel">
+      <button class="sheet-bar" id="sheet-toggle" type="button" aria-expanded="false" aria-controls="sheet-body">
+        <span class="sheet-bar-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z" />
+          </svg>
+        </span>
+        <span class="sheet-bar-title">General feedback</span>
+        <span class="badge" id="sheet-badge" hidden>1</span>
+        <svg class="sheet-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 6l4 4 4-4" />
+        </svg>
+      </button>
+      <div class="sheet-body" id="sheet-body">
+        <textarea id="general-comment" rows="6"
+          placeholder="e.g. Move T-007 before T-006 so the README doubles as the verification script…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <dialog id="export-dialog">
+    <div class="dialog-head">
+      <h3>Feedback as Markdown</h3>
+      <button class="btn btn-ghost" id="dialog-close" style="height:30px;padding:0 10px">Close</button>
+    </div>
+    <div class="dialog-body">
+      <pre id="export-preview"></pre>
+    </div>
+    <div class="dialog-foot">
+      <span class="spacer"></span>
+      <button class="btn btn-primary" id="copy-btn">Copy</button>
+    </div>
+  </dialog>
+
+  <div class="fv" id="file-viewer" role="dialog" aria-modal="true" aria-label="Files affected" hidden>
+    <div class="fv-card">
+      <div class="fv-head">
+        <div class="fv-title"></div>
+        <button class="btn btn-ghost fv-close" type="button" style="height:30px;padding:0 10px">Close
+          <kbd>Esc</kbd></button>
+      </div>
+      <div class="file-tabs fv-tabs" role="tablist"></div>
+      <div class="fv-panels"></div>
+    </div>
+  </div>
+
+  <button class="ask-fab ask-ui" id="ask-fab" type="button" title="Ask the agent about anything (⌘/)"
+    aria-label="Ask the agent about anything" aria-pressed="false">?</button>
+  <div class="ask-banner ask-ui" id="ask-banner">Ask mode · click anything to ask about it · <kbd>Esc</kbd> to cancel
+  </div>
+  <div class="ask-pop ask-ui" id="ask-pop" hidden>
+    <div class="ask-where" id="ask-where"></div>
+    <div class="ask-snippet" id="ask-snippet"></div>
+    <textarea id="ask-input" rows="3" placeholder="What do you want to know or change about this?"></textarea>
+    <div class="ask-foot">
+      <span class="hint">Copies a prompt for the agent chat · <kbd>⌘</kbd> <kbd>↵</kbd></span>
+      <span class="spacer"></span>
+      <button class="btn btn-ghost" id="ask-cancel" type="button">Cancel</button>
+      <button class="btn btn-primary" id="ask-copy" type="button">Copy question</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+      stroke-linejoin="round">
+      <path d="M3 8.5l3 3 7-7" />
+    </svg>
+    <span id="toast-text"></span>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+  <script>
+    const PLAN = { "title": "API Gateway Bootstrap (Go)", "shortTitle": "API Gateway Bootstrap", "intro": "Bootstrap a minimal Go API gateway under `services/api-gateway`, as described in [ARCHITECTURE.md](./ARCHITECTURE.md). Scope is **basic setup only**: Go module, HTTP framework, health endpoint, and configurable port. Actual proxy routing to learning-service / analytics-service / notes-service comes later.", "eyebrow": "Plan · PLAN.md · 7 tasks", "storageKey": "plan-feedback:PLAN.md", "maxFiles": 10, "source": "PLAN.md", "rendered": "PLAN.html", "tickets": [{ "id": "T-001", "title": "Make the Go toolchain available on PATH", "line": 19, "criteria": [{ "text": "Go 1.22 or newer installed (1.27.1 at `/usr/local/go`)", "done": true }, { "text": "`go env GOPATH` resolves (`/Users/johndoe/go`)", "done": true }, { "text": "`~/.zprofile` no longer clobbers the inherited PATH", "done": true }, { "text": "`go version` works in a fresh shell without a full path", "done": true }], "description": [{ "type": "p", "text": "Go 1.27.1 is already installed at `/usr/local/go`, but `go` is not on PATH. The installer registered `/usr/local/go/bin` in `/etc/paths.d/go`, and `~/.zprofile` then overwrites PATH with an absolute assignment that discards everything `path_helper` contributed. Fix that line so inherited entries survive (`/opt/podman/bin` is dropped by the same bug)." }], "files": [], "done": true, "hash": "9625cbfa9f" }, { "id": "T-002", "title": "Create api-gateway folder and Go module", "line": 33, "criteria": [{ "text": "`services/api-gateway` folder exists", "done": true }, { "text": "`go.mod` created with module path `github.com/studyflow/api-gateway`", "done": true }, { "text": "`cmd/gateway/main.go` entry point exists", "done": true }, { "text": "`.gitignore` excludes compiled binaries", "done": true }, { "text": "`go build ./...` succeeds", "done": true }], "description": [{ "type": "p", "text": "Create `services/api-gateway` and initialize a Go module. Follow the existing folder naming used by `services/learning-service` (no language suffix), with `cmd/gateway/main.go` as the entry point and `internal/` reserved for future routing and config packages. Add a `.gitignore` for build artifacts." }], "files": [{ "path": "services/api-gateway/go.mod", "status": "new", "lang": "go", "code": "module github.com/studyflow/api-gateway\n\ngo 1.27.1" }, { "path": "services/api-gateway/.gitignore", "status": "new", "lang": "sh", "code": "bin\n/gateway\n*.exe\n*.test\n*.out" }], "done": true, "hash": "adc5e9c7d6" }, { "id": "T-003", "title": "Choose and configure HTTP framework", "line": 68, "criteria": [{ "text": "Framework dependency added to `go.mod` and `go.sum`", "done": true }, { "text": "Router instance created in `main.go`", "done": true }, { "text": "HTTP server starts and listens without errors", "done": true }, { "text": "Unit test exercises the router in-process via `httptest` (`internal/router/router_test.go`)", "done": true }], "description": [{ "type": "p", "text": "ARCHITECTURE.md lists two options: **Fiber** (fasthttp-based, very fast, Express-like API) or **Gin** (net/http-based, largest ecosystem, middleware-rich). **Gin** is recommended for a gateway: it sits on standard `net/http`, so `httputil.ReverseProxy` and standard middleware work directly when real routing is added. Add the dependency and wire up a basic router and server." }], "files": [{ "path": "services/api-gateway/go.mod", "status": "modified", "lang": "diff", "code": " module github.com/studyflow/api-gateway\n\n go 1.27.1\n+\n+require github.com/gin-gonic/gin v1.12.0" }, { "path": "services/api-gateway/cmd/gateway/main.go", "status": "new", "lang": "go", "code": "package main\n\nimport (\n\t\"log\"\n\t\"net/http\"\n\n\t\"github.com/studyflow/api-gateway/internal/router\"\n)\n\nfunc main() {\n\tserver := &http.Server{\n\t\tAddr:    \":8000\",\n\t\tHandler: router.New(),\n\t}\n\n\tlog.Printf(\"api-gateway listening on %s\", server.Addr)\n\tif err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {\n\t\tlog.Fatalf(\"api-gateway failed: %v\", err)\n\t}\n}" }], "done": true, "hash": "61e58c6a9c" }, { "id": "T-004", "title": "Implement health and hello endpoints", "line": 119, "criteria": [{ "text": "`GET /health` returns 200 with JSON status body", "done": true }, { "text": "`GET /hello` returns 200 with JSON message body", "done": true }, { "text": "Responses use `application/json` content type", "done": true }, { "text": "Unknown routes return 404", "done": true }, { "text": "Unit tests cover status code, content type, and body for `/health`, `/hello`, and an unknown route", "done": true }], "description": [{ "type": "p", "text": "Add two minimal endpoints: `GET /health` returning `{\"status\": \"ok\"}` for future Docker/Kubernetes probes, and `GET /hello` returning `{\"message\": \"Hello from api-gateway\"}` to mirror the learning-service bootstrap." }], "files": [{ "path": "services/api-gateway/internal/router/router.go", "status": "new", "lang": "go", "code": "package router\n\nimport (\n\t\"net/http\"\n\n\t\"github.com/gin-gonic/gin\"\n)\n\nfunc New() *gin.Engine {\n\tr := gin.Default()\n\n\tr.GET(\"/health\", func(c *gin.Context) {\n\t\tc.JSON(http.StatusOK, gin.H{\"status\": \"ok\"})\n\t})\n\n\tr.GET(\"/hello\", func(c *gin.Context) {\n\t\tc.JSON(http.StatusOK, gin.H{\"message\": \"Hello from api-gateway\"})\n\t})\n\n\tr.NoRoute(func(c *gin.Context) {\n\t\tc.JSON(http.StatusNotFound, gin.H{\"error\": \"not found\"})\n\t})\n\n\treturn r\n}" }, { "path": "services/api-gateway/internal/router/router_test.go", "status": "new", "lang": "go", "code": "func TestRoutes(t *testing.T) {\n\tgin.SetMode(gin.TestMode)\n\tr := New()\n\n\ttests := []struct {\n\t\tpath       string\n\t\twantStatus int\n\t\twantKey    string\n\t\twantValue  string\n\t}{\n\t\t{\"/health\", http.StatusOK, \"status\", \"ok\"},\n\t\t{\"/hello\", http.StatusOK, \"message\", \"Hello from api-gateway\"},\n\t\t{\"/unknown\", http.StatusNotFound, \"error\", \"not found\"},\n\t}\n\n\tfor _, tt := range tests {\n\t\tt.Run(tt.path, func(t *testing.T) {\n\t\t\tw := httptest.NewRecorder()\n\t\t\treq := httptest.NewRequest(http.MethodGet, tt.path, nil)\n\t\t\tr.ServeHTTP(w, req)\n\n\t\t\tif w.Code != tt.wantStatus {\n\t\t\t\tt.Fatalf(\"status = %d, want %d\", w.Code, tt.wantStatus)\n\t\t\t}\n\t\t\tif ct := w.Header().Get(\"Content-Type\"); !strings.HasPrefix(ct, \"application/json\") {\n\t\t\t\tt.Fatalf(\"content type = %q, want application/json\", ct)\n\t\t\t}\n\t\t\t// ...decode JSON body and compare tt.wantKey / tt.wantValue\n\t\t})\n\t}\n}" }], "done": true, "hash": "995fbd0752" }, { "id": "T-005", "title": "Configurable port and downstream service URLs", "line": 202, "criteria": [{ "text": "`PORT` env var controls the listen port, default `8000`", "done": true }, { "text": "`LEARNING_SERVICE_URL` default `http://localhost:8080`", "done": true }, { "text": "`ANALYTICS_SERVICE_URL` and `NOTES_SERVICE_URL` placeholders defined", "done": true }, { "text": "Resolved config logged once on startup", "done": true }, { "text": "Unit tests cover defaults and env var overrides (`internal/config/config_test.go`)", "done": true }], "description": [{ "type": "p", "text": "Read configuration from environment variables with sensible defaults, so the gateway can later be pointed at services running in Docker or Kubernetes. Keep it dependency-free using `os.Getenv`. No proxying yet — just load and log the values at startup." }], "files": [{ "path": "services/api-gateway/internal/config/config.go", "status": "new", "lang": "go", "code": "package config\n\nimport \"os\"\n\ntype Config struct {\n\tPort                string\n\tLearningServiceURL  string\n\tAnalyticsServiceURL string\n\tNotesServiceURL     string\n}\n\nfunc Load() Config {\n\treturn Config{\n\t\tPort:                getEnv(\"PORT\", \"8000\"),\n\t\tLearningServiceURL:  getEnv(\"LEARNING_SERVICE_URL\", \"http://localhost:8080\"),\n\t\tAnalyticsServiceURL: getEnv(\"ANALYTICS_SERVICE_URL\", \"http://localhost:8081\"),\n\t\tNotesServiceURL:     getEnv(\"NOTES_SERVICE_URL\", \"http://localhost:8082\"),\n\t}\n}\n\nfunc getEnv(key, fallback string) string {\n\tif v := os.Getenv(key); v != \"\" {\n\t\treturn v\n\t}\n\treturn fallback\n}" }, { "path": "services/api-gateway/internal/config/config_test.go", "status": "new", "lang": "go", "code": "func TestLoadFromEnv(t *testing.T) {\n\tt.Setenv(\"PORT\", \"9000\")\n\tt.Setenv(\"LEARNING_SERVICE_URL\", \"http://learning:8080\")\n\tt.Setenv(\"ANALYTICS_SERVICE_URL\", \"http://analytics:8081\")\n\tt.Setenv(\"NOTES_SERVICE_URL\", \"http://notes:8082\")\n\n\twant := Config{\n\t\tPort:                \"9000\",\n\t\tLearningServiceURL:  \"http://learning:8080\",\n\t\tAnalyticsServiceURL: \"http://analytics:8081\",\n\t\tNotesServiceURL:     \"http://notes:8082\",\n\t}\n\tif got := Load(); got != want {\n\t\tt.Fatalf(\"Load() = %+v, want %+v\", got, want)\n\t}\n}" }, { "path": "services/api-gateway/cmd/gateway/main.go", "status": "modified", "lang": "diff", "code": " import (\n \t\"log\"\n \t\"net/http\"\n\n+\t\"github.com/studyflow/api-gateway/internal/config\"\n \t\"github.com/studyflow/api-gateway/internal/router\"\n )\n\n func main() {\n+\tcfg := config.Load()\n+\n+\tlog.Printf(\"config: port=%s learning=%s analytics=%s notes=%s\",\n+\t\tcfg.Port, cfg.LearningServiceURL, cfg.AnalyticsServiceURL, cfg.NotesServiceURL)\n+\n \tserver := &http.Server{\n-\t\tAddr:    \":8000\",\n+\t\tAddr:    \":\" + cfg.Port,\n \t\tHandler: router.New(),\n \t}" }], "done": true, "hash": "ad77527453" }, { "id": "T-006", "title": "Verify gateway runs and responds", "line": 295, "criteria": [{ "text": "`go run ./cmd/gateway` starts the service", "done": false }, { "text": "`curl http://localhost:8000/health` returns the expected JSON", "done": false }, { "text": "`curl http://localhost:8000/hello` returns the expected JSON", "done": false }, { "text": "No runtime errors on startup, request handling, or shutdown", "done": false }, { "text": "`go test ./...` passes", "done": false }], "description": [{ "type": "p", "text": "Confirm the gateway builds, starts locally, and both endpoints are reachable." }], "files": [], "done": false, "hash": "ae41c11721" }, { "id": "T-007", "title": "Add service README", "line": 310, "criteria": [{ "text": "`services/api-gateway/README.md` exists", "done": false }, { "text": "Build, run, and test (`go test ./...`) commands documented", "done": false }, { "text": "Environment variables and defaults documented", "done": false }, { "text": "Example `curl` commands included", "done": false }], "description": [{ "type": "p", "text": "Document how to build, run, and test the gateway, matching the style of `services/learning-service/README.md`. Include the environment variables from T-005." }], "files": [{ "path": "services/api-gateway/README.md", "status": "modified", "lang": "diff", "code": " go build ./cmd/gateway\n+\n+# Test the API Gateway\n+\n+Run from `services/api-gateway`: `go test ./...`\n+\n+# Configuration\n+\n+| Variable                | Default                 |\n+| ----------------------- | ----------------------- |\n+| `PORT`                  | `8000`                  |\n+| `LEARNING_SERVICE_URL`  | `http://localhost:8080` |\n+| `ANALYTICS_SERVICE_URL` | `http://localhost:8081` |\n+| `NOTES_SERVICE_URL`     | `http://localhost:8082` |\n+\n+# Try it\n+\n+`curl http://localhost:8000/health` returns `{\"status\":\"ok\"}`\n+\n+`curl http://localhost:8000/hello` returns `{\"message\":\"Hello from api-gateway\"}`" }], "done": false, "hash": "ed580a524c" }], "notes": ["Scope is basic setup only; reverse-proxy routes (`/items`, `/chapters`, `/analytics/*`, `/notes/*`) are a follow-up feature", "`learning-service` already occupies port `8080`, so the gateway defaults to `8000` locally", "ARCHITECTURE.md's repo structure suggests `api-gateway-go`, but the existing tree uses unsuffixed names (`services/learning-service`), so `services/api-gateway` keeps it consistent", "Gin is recommended over Fiber because it uses standard `net/http`, which makes `httputil.ReverseProxy` straightforward later", "Auth, rate limiting, and BFF-style response aggregation are explicitly future work per ARCHITECTURE.md", "Every task that adds or changes Go code must include unit tests; toolchain, scaffolding, and documentation tasks are exempt"] };
+    PLAN.source ??= (PLAN.storageKey || "").split(":")[1] || "PLAN.md";
+    PLAN.rendered ??= PLAN.source.replace(/\.md$/i, ".html");
+
+    const ICONS = {
+      check: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-6"/></svg>',
+      comment: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z"/></svg>',
+      approve: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3 3 7-7"/></svg>',
+      changes: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v6M8 11.5v.5"/></svg>',
+      remove: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>'
+    };
+
+    const escapeHtml = s => s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const inline = s => escapeHtml(s)
+      .replace(/`([^`]+)`/g, "<code>$1</code>")
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+
+    function renderBlocks(blocks, blockNotes = {}, strikedBlocks = {}) {
+      return blocks.map((b, i) => {
+        const note = blockNotes[i] || "";
+        const striked = !!strikedBlocks[i];
+        const classes = ["desc-block", note ? "open" : "", striked ? "striked" : ""].filter(Boolean).join(" ");
+        const noteBtn = `<button class="desc-note-btn${note ? " has-note" : ""}" data-action="toggle-desc-note" title="Add a note" aria-label="Add a note">${ICONS.comment}</button>`;
+        const strikeBtn = `<button class="desc-strike-btn${striked ? " active" : ""}" data-action="toggle-strike-block" title="Mark for removal" aria-label="Mark for removal">${ICONS.remove}</button>`;
+        const noteInput = `<div class="desc-note"><textarea rows="1" data-field="block-comment" placeholder="Note on this block…">${escapeHtml(note)}</textarea></div>`;
+        if (b.type === "code") {
+          const lang = b.lang ? escapeHtml(b.lang) : "code";
+          const langClass = b.lang ? ` class="language-${escapeHtml(b.lang)}"` : "";
+          return `<div class="${classes}" data-block-index="${i}">
+        <div class="code-block">
+          <div class="code-block-head">
+            <span class="code-lang">${lang}</span>
+            <div class="code-block-actions">${strikeBtn}${noteBtn}<button class="code-copy" data-action="copy-code" type="button">Copy</button></div>
+          </div>
+          <pre><code${langClass}>${escapeHtml(b.code)}</code></pre>
+        </div>
+        ${noteInput}
+      </div>`;
+        }
+        return `<div class="${classes}" data-block-index="${i}">
+      <div class="desc-block-inner">
+        <p class="ticket-desc">${inline(b.text)}</p>
+        ${strikeBtn}${noteBtn}
+      </div>
+      ${noteInput}
+    </div>`;
+      }).join("");
+    }
+
+    const EXT_LANG = { js: "javascript", mjs: "javascript", cjs: "javascript", jsx: "javascript", ts: "typescript", tsx: "typescript", py: "python", sh: "bash", zsh: "bash", bash: "bash", go: "go", mod: "go", md: "markdown", json: "json", html: "xml", xml: "xml", css: "css", yml: "yaml", yaml: "yaml", toml: "ini", sql: "sql", rs: "rust", java: "java", rb: "ruby" };
+    const STATUS_LABEL = { new: "New", modified: "Modified", deleted: "Deleted" };
+
+    function fileLang(f) {
+      const name = f.path.split("/").pop();
+      const ext = name.includes(".") ? name.split(".").pop().toLowerCase() : "";
+      const dot = name.startsWith(".") && !name.includes(".", 1) ? "bash" : "";
+      return EXT_LANG[ext] || dot || (f.lang && f.lang !== "diff" ? f.lang : "");
+    }
+    function highlightLine(text, lang) {
+      if (lang && typeof hljs !== "undefined" && hljs.getLanguage(lang)) {
+        try { return hljs.highlight(text, { language: lang, ignoreIllegals: true }).value; } catch { }
+      }
+      return escapeHtml(text);
+    }
+    function renderFileCode(f) {
+      const lang = fileLang(f);
+      const isDiff = f.lang === "diff";
+      return f.code.split("\n").map((line, i) => {
+        let kind = "", gutter = String(i + 1), text = line;
+        if (isDiff) {
+          const c = line[0];
+          kind = c === "+" ? "add" : c === "-" ? "del" : "";
+          gutter = c === "+" || c === "-" ? c : "";
+          text = c === "+" || c === "-" || c === " " ? line.slice(1) : line;
+        }
+        return `<div class="cl${kind ? " " + kind : ""}"><span class="cg">${gutter}</span><span class="ct">${highlightLine(text, lang) || " "}</span></div>`;
+      }).join("");
+    }
+    function fileCopyText(f) {
+      if (f.lang !== "diff") return f.code;
+      return f.code.split("\n").filter(l => l[0] !== "-").map(l => (l[0] === "+" || l[0] === " ") ? l.slice(1) : l).join("\n");
+    }
+    const hasContent = f => !(f.status === "deleted" && !f.code);
+    function fileStat(f) {
+      if (!hasContent(f)) return "removed";
+      const lines = f.code.split("\n");
+      if (f.lang === "diff") {
+        const add = lines.filter(l => l[0] === "+").length, del = lines.filter(l => l[0] === "-").length;
+        return `<span class="stat-add">+${add}</span> <span class="stat-del">−${del}</span>`;
+      }
+      return `${lines.length} lines`;
+    }
+    const CHEVRON = '<svg class="file-row-go" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5L10.5 8 6 12.5"/></svg>';
+
+    // Compact list inside the ticket; the full code opens in the viewer overlay.
+    function renderFiles(files) {
+      if (!files || !files.length) return "";
+      const rows = files.map((f, i) => {
+        const inner = `<span class="file-dot"></span><span class="file-row-path">${escapeHtml(f.path)}</span><span class="file-row-stat">${fileStat(f)}</span><span class="file-status">${STATUS_LABEL[f.status]}</span>`;
+        return hasContent(f)
+          ? `<button class="file-row" type="button" data-action="open-file" data-file="${i}" data-status="${f.status}" title="View ${escapeHtml(f.path)}">${inner}${CHEVRON}</button>`
+          : `<div class="file-row static" data-file="${i}" data-status="${f.status}">${inner}</div>`;
+      }).join("");
+      const max = PLAN.maxFiles || 10;
+      const warn = files.length > max
+        ? `<div class="files-warn">${files.length} files listed — over the limit of ${max}. Consider splitting this task or listing only the key files.</div>`
+        : "";
+      return `<div class="ac-label">Files affected</div>${warn}<div class="files">${rows}</div>`;
+    }
+
+    // Large overlay with every file of one ticket as tabs.
+    const viewer = document.getElementById("file-viewer");
+    let viewerOpen = false;
+    function openViewer(ticketId, index) {
+      const ticket = PLAN.tickets.find(t => t.id === ticketId);
+      const files = ticket.files;
+      const tabs = files.map((f, i) => `<button class="file-tab${i === index ? " active" : ""}" role="tab" type="button" data-action="viewer-tab" data-file="${i}" data-status="${f.status}" title="${escapeHtml(f.path)}"><span class="file-dot"></span><span class="file-name">${escapeHtml(f.path.split("/").pop())}</span></button>`).join("");
+      const panels = files.map((f, i) => {
+        const body = hasContent(f)
+          ? `<div class="file-body">${renderFileCode(f)}</div>`
+          : `<div class="file-gone">This file is removed — no content to show.</div>`;
+        const copy = hasContent(f) ? `<button class="code-copy" data-action="viewer-copy" data-file="${i}" type="button">Copy</button>` : "";
+        return `<div class="file-panel${i === index ? " active" : ""}" role="tabpanel" data-file="${i}" data-status="${f.status}">
+          <div class="file-head"><span class="file-path">${escapeHtml(f.path)}</span><span class="file-row-stat">${fileStat(f)}</span><span class="file-status">${STATUS_LABEL[f.status]}</span>${copy}</div>
+          ${body}
+        </div>`;
+      }).join("");
+      viewer.dataset.id = ticketId;
+      viewer.querySelector(".fv-title").innerHTML = `<span class="ticket-id">${ticket.id}</span> ${inline(ticket.title)}`;
+      viewer.querySelector(".fv-tabs").innerHTML = tabs;
+      viewer.querySelector(".fv-panels").innerHTML = panels;
+      viewer.hidden = false;
+      viewerOpen = true;
+      document.body.style.overflow = "hidden";
+      viewer.querySelector(".fv-close").focus();
+    }
+    function closeViewer() {
+      viewer.hidden = true;
+      viewerOpen = false;
+      document.body.style.overflow = "";
+    }
+    viewer.addEventListener("click", e => {
+      if (e.target === viewer) { closeViewer(); return; }
+      const btn = e.target.closest("[data-action]");
+      if (!btn) { if (e.target.closest(".fv-close")) closeViewer(); return; }
+      if (btn.dataset.action === "viewer-tab") {
+        viewer.querySelectorAll(".file-tab, .file-panel").forEach(el => el.classList.toggle("active", el.dataset.file === btn.dataset.file));
+      }
+      if (btn.dataset.action === "viewer-copy") {
+        const ticket = PLAN.tickets.find(t => t.id === viewer.dataset.id);
+        copyText(fileCopyText(ticket.files[Number(btn.dataset.file)])).then(ok => toast(ok ? "Copied file to clipboard" : "Clipboard blocked — copy failed"));
+      }
+    });
+
+    let state = load();
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(PLAN.storageKey);
+        if (raw) return JSON.parse(raw);
+      } catch { }
+      return { tickets: {}, general: "", notes: {} };
+    }
+    if (!state.notes) state.notes = {};
+    function save() { localStorage.setItem(PLAN.storageKey, JSON.stringify(state)); refreshMeta(); }
+    function ticketState(id) {
+      if (!state.tickets[id]) state.tickets[id] = { verdict: null, comment: "", criteria: {}, blocks: {}, strikedBlocks: {}, strikedCriteria: {} };
+      return state.tickets[id];
+    }
+    function noteState(i) {
+      if (!state.notes[i]) state.notes[i] = { comment: "", striked: false };
+      return state.notes[i];
+    }
+    function hasFeedback(t) {
+      return Boolean(
+        t.verdict || t.comment.trim() ||
+        Object.values(t.criteria).some(v => v && v.trim()) ||
+        Object.values(t.blocks || {}).some(v => v && v.trim()) ||
+        Object.values(t.strikedBlocks || {}).some(Boolean) ||
+        Object.values(t.strikedCriteria || {}).some(Boolean)
+      );
+    }
+    function isStale(ticket, s) {
+      return hasFeedback(s) && Boolean(s.reviewedHash) && s.reviewedHash !== ticket.hash;
+    }
+    function touch(id) {
+      const ticket = PLAN.tickets.find(t => t.id === id);
+      const s = ticketState(id);
+      // An auto-set "Request changes" goes away once no feedback is left on the task.
+      if (s.verdictAuto && s.verdict && !hasFeedback({ ...s, verdict: null })) {
+        s.verdict = null;
+        delete s.verdictAuto;
+        const article = document.getElementById(id);
+        if (article) {
+          article.dataset.verdict = "";
+          article.querySelectorAll(".seg").forEach(b => b.classList.remove("active"));
+          updateTrackerRow(id, s);
+          updateSideNavVerdict(id, s);
+        }
+      }
+      if (hasFeedback(s)) s.reviewedHash = ticket.hash; else delete s.reviewedHash;
+    }
+    function pills(ticket, s) {
+      const verdict = s.verdict === "changes" ? '<span class="pill pill-changes">Changes</span>'
+        : s.verdict === "approve" ? '<span class="pill pill-approve">Approved</span>'
+          : s.verdict === "remove" ? '<span class="pill pill-remove">Remove task</span>' : "";
+      const stale = isStale(ticket, s)
+        ? `<button class="pill pill-stale" data-action="ack" title="The plan text changed after you reviewed it. Click to dismiss.">${ICONS.changes} Updated since review</button>`
+        : "";
+      const status = `<span class="pill ${ticket.done ? "pill-done" : "pill-todo"}">${ticket.done ? "Done" : "Todo"}</span>`;
+      return { verdict, stale, status };
+    }
+    function feedbackCount() {
+      let n = 0;
+      for (const t of Object.values(state.tickets)) {
+        if (t.verdict && !t.verdictAuto) n++;
+        if (t.comment.trim()) n++;
+        n += Object.values(t.criteria).filter(v => v && v.trim()).length;
+        n += Object.values(t.blocks || {}).filter(v => v && v.trim()).length;
+        n += Object.values(t.strikedBlocks || {}).filter(Boolean).length;
+        n += Object.values(t.strikedCriteria || {}).filter(Boolean).length;
+      }
+      for (const nt of Object.values(state.notes || {})) {
+        if (nt.comment && nt.comment.trim()) n++;
+        if (nt.striked) n++;
+      }
+      if (state.general.trim()) n++;
+      return n;
+    }
+
+    function render() {
+      document.getElementById("brand-title").textContent = PLAN.shortTitle;
+      document.getElementById("eyebrow").textContent = PLAN.eyebrow;
+      document.getElementById("title").innerHTML = inline(PLAN.shortTitle);
+      document.getElementById("lede").innerHTML = inline(PLAN.intro);
+
+      const tracker = document.getElementById("tracker");
+      tracker.innerHTML = PLAN.tickets.map(t => {
+        const s = ticketState(t.id);
+        const p = pills(t, s);
+        return `<a class="tracker-row" href="#${t.id}">
+      <span class="tracker-id">${t.id}</span>
+      <span class="tracker-desc">${inline(t.title)}</span>
+      <span class="tracker-flags">${p.stale}${p.verdict}${p.status}</span>
+    </a>`;
+      }).join("");
+
+      const tickets = document.getElementById("tickets");
+      tickets.innerHTML = PLAN.tickets.map(t => {
+        const s = ticketState(t.id);
+        const p = pills(t, s);
+        return `<article class="ticket" id="${t.id}" data-id="${t.id}" data-verdict="${s.verdict || ""}">
+      <div class="ticket-head">
+        <span class="ticket-id">${t.id}</span>
+        <h2 class="ticket-title">${inline(t.title)}</h2>
+        <span class="tracker-flags">${p.stale}${p.status}</span>
+      </div>
+      <div class="ticket-body">
+        ${renderBlocks(t.description, s.blocks || {}, s.strikedBlocks || {})}
+        <div class="ac-label">Acceptance criteria</div>
+        <ul class="ac-list">
+          ${t.criteria.map((c, i) => {
+          const note = s.criteria[i] || "";
+          const striked = !!(s.strikedCriteria || {})[i];
+          const liClass = ["ac", note ? "open" : "", striked ? "striked" : ""].filter(Boolean).join(" ");
+          return `<li class="${liClass}" data-index="${i}">
+              <div class="ac-row">
+                <span class="ac-box ${c.done ? "on" : ""}">${c.done ? ICONS.check : ""}</span>
+                <span class="ac-text">${inline(c.text)}</span>
+                <button class="ac-strike-btn${striked ? " active" : ""}" data-action="toggle-strike-criterion" title="Mark for removal" aria-label="Mark for removal">${ICONS.remove}</button>
+                <button class="ac-note-btn ${note ? "has-note" : ""}" data-action="toggle-note" title="Add a note" aria-label="Add a note">${ICONS.comment}</button>
+              </div>
+              <div class="ac-note"><textarea rows="1" data-field="criterion" placeholder="Note on this criterion…">${escapeHtml(note)}</textarea></div>
+            </li>`;
+        }).join("")}
+        </ul>
+        ${renderFiles(t.files)}
+        <div class="feedback${s.verdict || (s.comment && s.comment.trim()) ? " open" : ""}">
+          <div class="feedback-top">
+            <button class="review-toggle-btn${s.comment && s.comment.trim() ? " has-review" : ""}" data-action="toggle-review" title="Toggle review text" aria-label="Toggle review text">${ICONS.comment} Review</button>
+            <div class="segment" role="group" aria-label="Verdict">
+              <button class="seg ${s.verdict === "approve" ? "active" : ""}" data-action="verdict" data-verdict="approve">${ICONS.approve} Approve</button>
+              <button class="seg ${s.verdict === "changes" ? "active" : ""}" data-action="verdict" data-verdict="changes">${ICONS.changes} Request changes</button>
+              <button class="seg ${s.verdict === "remove" ? "active" : ""}" data-action="verdict" data-verdict="remove">${ICONS.remove} Remove task</button>
+            </div>
+          </div>
+          <textarea rows="2" data-field="comment" placeholder="What should change, or why this is good as is…">${escapeHtml(s.comment)}</textarea>
+        </div>
+      </div>
+    </article>`;
+      }).join("");
+
+      renderNotesList();
+      document.getElementById("general-comment").value = state.general;
+
+      renderSideNav();
+      setupSideNavObserver();
+      setupScrollSpy();
+      updateSheetBadge();
+
+      document.querySelectorAll("textarea").forEach(autosize);
+      refreshMeta();
+    }
+
+    let sideNavObserver = null;
+    let scrollSpyObserver = null;
+    let activeSideId = null;
+
+    function renderSideNav() {
+      const nav = document.getElementById("side-nav");
+      nav.innerHTML = PLAN.tickets.map((t, i) => {
+        const s = ticketState(t.id);
+        const cls = ["side-nav-item", t.done ? "done" : "", s.verdict ? `verdict-${s.verdict}` : ""].filter(Boolean).join(" ");
+        const dot = t.done ? ICONS.check : String(i + 1);
+        return `<a href="#${t.id}" class="${cls}" data-id="${t.id}" title="${escapeHtml(t.id)} — ${escapeHtml(t.title)}">
+      <span class="side-nav-dot">${dot}</span>
+      <span class="side-nav-label">${escapeHtml(t.id)}: ${escapeHtml(t.title)}</span>
+    </a>`;
+      }).join("") + `<a href="#notes-section" class="side-nav-item" data-id="notes-section" title="Notes">
+      <span class="side-nav-dot">${ICONS.comment}</span>
+      <span class="side-nav-label">Notes</span>
+    </a>`;
+    }
+
+    function setActiveSideNav(id) {
+      if (!id || id === activeSideId) return;
+      activeSideId = id;
+      document.querySelectorAll("#side-nav .side-nav-item").forEach(el => {
+        el.classList.toggle("active", el.dataset.id === id);
+      });
+    }
+
+    function ensureChangesVerdict(article, s) {
+      if (s.verdict === "changes") return;
+      s.verdict = "changes";
+      s.verdictAuto = true;
+      article.dataset.verdict = "changes";
+      article.querySelectorAll(".seg").forEach(b => b.classList.toggle("active", b.dataset.verdict === "changes"));
+      updateTrackerRow(article.dataset.id, s);
+      updateSideNavVerdict(article.dataset.id, s);
+    }
+
+    function updateSideNavVerdict(id, s) {
+      const item = document.querySelector(`#side-nav .side-nav-item[data-id="${id}"]`);
+      if (!item) return;
+      item.classList.remove("verdict-approve", "verdict-changes", "verdict-remove");
+      if (s.verdict) item.classList.add(`verdict-${s.verdict}`);
+    }
+
+    function setupSideNavObserver() {
+      const target = document.getElementById("tracker");
+      if (!target) return;
+      if (sideNavObserver) sideNavObserver.disconnect();
+      sideNavObserver = new IntersectionObserver(([entry]) => {
+        const passed = !entry.isIntersecting && entry.boundingClientRect.top < 0;
+        document.getElementById("side-nav")?.classList.toggle("visible", passed);
+        document.body.classList.toggle("nav-passed", passed);
+        if (!passed) setNavOpen(false);
+      }, { threshold: 0 });
+      sideNavObserver.observe(target);
+    }
+
+    function setupScrollSpy() {
+      if (scrollSpyObserver) scrollSpyObserver.disconnect();
+      scrollSpyObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) setActiveSideNav(entry.target.dataset.id);
+        });
+      }, { rootMargin: "-45% 0px -45% 0px", threshold: 0 });
+      document.querySelectorAll("#tickets .ticket, #notes-section").forEach(el => scrollSpyObserver.observe(el));
+    }
+
+    function updateSheetBadge() {
+      const badge = document.getElementById("sheet-badge");
+      badge.hidden = !state.general.trim();
+      document.getElementById("feedback-tab").classList.toggle("has-note", Boolean(state.general.trim()));
+    }
+
+    function refreshMeta() {
+      const done = PLAN.tickets.filter(t => t.done).length;
+      const total = PLAN.tickets.length;
+      document.getElementById("meter-text").textContent = `${done} / ${total} done`;
+      document.getElementById("meter-fill").style.width = `${(done / total) * 100}%`;
+      const n = feedbackCount();
+      const badge = document.getElementById("feedback-count");
+      badge.hidden = n === 0;
+      badge.textContent = n;
+      document.getElementById("reset-btn").hidden = n === 0;
+      document.getElementById("reset-count").textContent = n;
+    }
+
+    function autosize(el) {
+      el.style.height = "auto";
+      el.style.height = el.scrollHeight + 2 + "px";
+    }
+
+    function ticketOf(el) { return el.closest(".ticket"); }
+
+    document.getElementById("tickets").addEventListener("click", e => {
+      const btn = e.target.closest("[data-action]");
+      if (!btn) return;
+      if (btn.dataset.action === "copy-code") {
+        const code = btn.closest(".code-block").querySelector("code").textContent;
+        navigator.clipboard.writeText(code).then(() => toast("Copied code to clipboard")).catch(() => { });
+        return;
+      }
+      if (btn.dataset.action === "open-file") {
+        openViewer(ticketOf(btn).dataset.id, Number(btn.dataset.file));
+        return;
+      }
+      const article = ticketOf(btn);
+      const s = ticketState(article.dataset.id);
+      if (btn.dataset.action === "verdict") {
+        s.verdict = s.verdict === btn.dataset.verdict ? null : btn.dataset.verdict;
+        delete s.verdictAuto;
+        article.dataset.verdict = s.verdict || "";
+        article.querySelectorAll(".seg").forEach(b => b.classList.toggle("active", b.dataset.verdict === s.verdict));
+        const feedback = article.querySelector(".feedback");
+        feedback.querySelector(".review-toggle-btn").classList.toggle("has-review", Boolean(s.comment && s.comment.trim()));
+        touch(article.dataset.id);
+        save();
+        updateTrackerRow(article.dataset.id, s);
+        updateSideNavVerdict(article.dataset.id, s);
+        if (s.verdict === "changes" && feedback.classList.contains("open")) {
+          const ta = article.querySelector("textarea");
+          if (!ta.value.trim()) ta.focus();
+        }
+      }
+      if (btn.dataset.action === "toggle-review") {
+        const feedback = btn.closest(".feedback");
+        const open = feedback.classList.toggle("open");
+        if (open) {
+          const ta = feedback.querySelector("textarea");
+          autosize(ta);
+          ta.focus();
+        }
+      }
+      if (btn.dataset.action === "toggle-note") {
+        const li = btn.closest(".ac");
+        const input = li.querySelector("textarea");
+        const open = li.classList.toggle("open");
+        if (open) { autosize(input); input.focus(); }
+        else if (!input.value.trim()) {
+          delete s.criteria[li.dataset.index];
+          btn.classList.remove("has-note");
+          touch(article.dataset.id);
+          save();
+        }
+      }
+      if (btn.dataset.action === "toggle-desc-note") {
+        const block = btn.closest(".desc-block");
+        const input = block.querySelector(".desc-note textarea");
+        const open = block.classList.toggle("open");
+        if (open) { autosize(input); input.focus(); }
+        else if (!input.value.trim()) {
+          if (!s.blocks) s.blocks = {};
+          delete s.blocks[block.dataset.blockIndex];
+          btn.classList.remove("has-note");
+          touch(article.dataset.id);
+          save();
+        }
+      }
+      if (btn.dataset.action === "toggle-strike-criterion") {
+        const li = btn.closest(".ac");
+        const idx = li.dataset.index;
+        if (!s.strikedCriteria) s.strikedCriteria = {};
+        const active = !s.strikedCriteria[idx];
+        if (active) s.strikedCriteria[idx] = true; else delete s.strikedCriteria[idx];
+        li.classList.toggle("striked", active);
+        btn.classList.toggle("active", active);
+        touch(article.dataset.id);
+        save();
+      }
+      if (btn.dataset.action === "toggle-strike-block") {
+        const block = btn.closest(".desc-block");
+        const idx = block.dataset.blockIndex;
+        if (!s.strikedBlocks) s.strikedBlocks = {};
+        const active = !s.strikedBlocks[idx];
+        if (active) s.strikedBlocks[idx] = true; else delete s.strikedBlocks[idx];
+        block.classList.toggle("striked", active);
+        btn.classList.toggle("active", active);
+        touch(article.dataset.id);
+        save();
+      }
+      if (btn.dataset.action === "ack") {
+        touch(article.dataset.id);
+        save();
+        updateTrackerRow(article.dataset.id, s);
+      }
+    });
+
+    document.getElementById("tickets").addEventListener("input", e => {
+      const field = e.target.dataset.field;
+      if (!field) return;
+      const article = ticketOf(e.target);
+      const s = ticketState(article.dataset.id);
+      if (field === "comment") {
+        s.comment = e.target.value;
+        autosize(e.target);
+        const feedback = e.target.closest(".feedback");
+        feedback.querySelector(".review-toggle-btn").classList.toggle("has-review", Boolean(e.target.value.trim()));
+        if (e.target.value.trim()) ensureChangesVerdict(article, s);
+      }
+      if (field === "criterion") {
+        const li = e.target.closest(".ac");
+        const v = e.target.value;
+        autosize(e.target);
+        if (v.trim()) s.criteria[li.dataset.index] = v; else delete s.criteria[li.dataset.index];
+        li.querySelector(".ac-note-btn").classList.toggle("has-note", Boolean(v.trim()));
+        if (v.trim()) ensureChangesVerdict(article, s);
+      }
+      if (field === "block-comment") {
+        if (!s.blocks) s.blocks = {};
+        const block = e.target.closest(".desc-block");
+        const v = e.target.value;
+        autosize(e.target);
+        if (v.trim()) s.blocks[block.dataset.blockIndex] = v; else delete s.blocks[block.dataset.blockIndex];
+        block.querySelector(".desc-note-btn").classList.toggle("has-note", Boolean(v.trim()));
+        if (v.trim()) ensureChangesVerdict(article, s);
+      }
+      touch(article.dataset.id);
+      save();
+    });
+
+    document.getElementById("general-comment").addEventListener("input", e => {
+      state.general = e.target.value;
+      autosize(e.target);
+      save();
+      updateSheetBadge();
+    });
+
+    const feedbackSheet = document.getElementById("feedback-sheet");
+    const sheetToggle = document.getElementById("sheet-toggle");
+    const feedbackTab = document.getElementById("feedback-tab");
+    function setSheet(on) {
+      feedbackSheet.classList.toggle("show", on);
+      feedbackSheet.classList.toggle("open", on);
+      document.body.classList.toggle("sheet-open", on);
+      sheetToggle.setAttribute("aria-expanded", String(on));
+      feedbackTab.setAttribute("aria-expanded", String(on));
+      if (on) {
+        const ta = document.getElementById("general-comment");
+        autosize(ta);
+        ta.focus();
+      } else {
+        feedbackTab.focus();
+      }
+    }
+    feedbackTab.addEventListener("click", () => setSheet(true));
+    sheetToggle.addEventListener("click", () => setSheet(false));
+    document.getElementById("general-comment").addEventListener("keydown", e => {
+      if (e.key === "Escape") setSheet(false);
+    });
+
+    function renderNotesList() {
+      document.getElementById("notes").innerHTML = PLAN.notes.map((text, i) => {
+        const ns = noteState(i);
+        const note = ns.comment || "";
+        const striked = !!ns.striked;
+        const liClass = ["note-item", note ? "open" : "", striked ? "striked" : ""].filter(Boolean).join(" ");
+        return `<li class="${liClass}" data-index="${i}">
+      <div class="note-row">
+        <p class="note-text">${inline(text)}</p>
+        <button class="desc-strike-btn${striked ? " active" : ""}" data-action="toggle-strike-note" title="Mark for removal" aria-label="Mark for removal">${ICONS.remove}</button>
+        <button class="desc-note-btn${note ? " has-note" : ""}" data-action="toggle-note-note" title="Add a note" aria-label="Add a note">${ICONS.comment}</button>
+      </div>
+      <div class="desc-note"><textarea rows="1" data-field="note-comment" placeholder="Note on this…">${escapeHtml(note)}</textarea></div>
+    </li>`;
+      }).join("");
+    }
+
+    document.getElementById("notes").addEventListener("click", e => {
+      const btn = e.target.closest("[data-action]");
+      if (!btn) return;
+      const li = btn.closest(".note-item");
+      if (!li) return;
+      const ns = noteState(li.dataset.index);
+      if (btn.dataset.action === "toggle-note-note") {
+        const input = li.querySelector(".desc-note textarea");
+        const open = li.classList.toggle("open");
+        if (open) { autosize(input); input.focus(); }
+        else if (!input.value.trim()) {
+          ns.comment = "";
+          btn.classList.remove("has-note");
+          save();
+        }
+      }
+      if (btn.dataset.action === "toggle-strike-note") {
+        ns.striked = !ns.striked;
+        li.classList.toggle("striked", ns.striked);
+        btn.classList.toggle("active", ns.striked);
+        save();
+      }
+    });
+
+    document.getElementById("notes").addEventListener("input", e => {
+      if (e.target.dataset.field !== "note-comment") return;
+      const li = e.target.closest(".note-item");
+      const ns = noteState(li.dataset.index);
+      const v = e.target.value;
+      ns.comment = v;
+      autosize(e.target);
+      li.querySelector(".desc-note-btn").classList.toggle("has-note", Boolean(v.trim()));
+      save();
+    });
+
+    function updateTrackerRow(id, s) {
+      const ticket = PLAN.tickets.find(t => t.id === id);
+      const p = pills(ticket, s);
+      const row = document.querySelector(`.tracker-row[href="#${id}"] .tracker-flags`);
+      if (row) row.innerHTML = `${p.stale}${p.verdict}${p.status}`;
+      const head = document.querySelector(`#${id} .ticket-head .tracker-flags`);
+      if (head) head.innerHTML = `${p.stale}${p.status}`;
+    }
+
+    function buildMarkdown() {
+      const lines = [`# Feedback: ${PLAN.title}`, "", `_Reviewed ${new Date().toLocaleDateString("en-CA")}_`, ""];
+      let any = false;
+      for (const t of PLAN.tickets) {
+        const s = state.tickets[t.id];
+        if (!s || !hasFeedback(s)) continue;
+        any = true;
+        const verdict = s.verdict === "approve" ? "✅ Approved" : s.verdict === "changes" ? "🔁 Request changes" : s.verdict === "remove" ? "❌ Remove task" : "💬 Comment";
+        lines.push(`## ${t.id}: ${t.title} — ${verdict}`, "");
+        if (isStale(t, s)) lines.push("_Note: the task text changed after this review was written._", "");
+        if (s.comment.trim()) lines.push(...s.comment.trim().split("\n").map(l => `> ${l}`), "");
+        const allBlockIdxs = new Set([
+          ...Object.keys(s.blocks || {}).filter(i => (s.blocks[i] || "").trim()),
+          ...Object.keys(s.strikedBlocks || {}).filter(i => s.strikedBlocks[i])
+        ]);
+        if (allBlockIdxs.size) {
+          for (const idx of [...allBlockIdxs].sort((a, b) => Number(a) - Number(b))) {
+            const block = t.description[Number(idx)];
+            const label = block
+              ? (block.type === "code" ? `Code block \`${block.lang || "code"}\`` : `"${block.text.slice(0, 55)}${block.text.length > 55 ? "…" : ""}"`)
+              : `Block ${Number(idx) + 1}`;
+            const isStriked = s.strikedBlocks?.[idx];
+            const note = (s.blocks?.[idx] || "").trim();
+            lines.push(isStriked ? `- **❌ Remove** · ${label}` : `- **Block note** on ${label}`);
+            if (note) lines.push(`  - ${note}`);
+          }
+          lines.push("");
+        }
+        const allCriteriaIdxs = new Set([
+          ...Object.keys(s.criteria || {}).filter(i => (s.criteria[i] || "").trim()),
+          ...Object.keys(s.strikedCriteria || {}).filter(i => s.strikedCriteria[i])
+        ]);
+        if (allCriteriaIdxs.size) {
+          for (const i of [...allCriteriaIdxs].sort((a, b) => Number(a) - Number(b))) {
+            const criterion = t.criteria[Number(i)];
+            const isStriked = s.strikedCriteria?.[i];
+            const note = (s.criteria?.[i] || "").trim();
+            const label = criterion ? criterion.text : `AC ${Number(i) + 1}`;
+            lines.push(isStriked ? `- **❌ Remove AC ${Number(i) + 1}** · ${label}` : `- **AC ${Number(i) + 1}** · ${label}`);
+            if (note) lines.push(`  - ${note}`);
+          }
+          lines.push("");
+        }
+      }
+      const noteIdxs = new Set([
+        ...Object.keys(state.notes || {}).filter(i => (state.notes[i].comment || "").trim()),
+        ...Object.keys(state.notes || {}).filter(i => state.notes[i].striked)
+      ]);
+      if (noteIdxs.size) {
+        any = true;
+        lines.push("## Notes", "");
+        for (const i of [...noteIdxs].sort((a, b) => Number(a) - Number(b))) {
+          const text = PLAN.notes[Number(i)] || `Note ${Number(i) + 1}`;
+          const ns = state.notes[i];
+          const label = `"${text.slice(0, 60)}${text.length > 60 ? "…" : ""}"`;
+          lines.push(ns.striked ? `- **❌ Remove** · ${label}` : `- **Note** · ${label}`);
+          if ((ns.comment || "").trim()) lines.push(`  - ${ns.comment.trim()}`);
+        }
+        lines.push("");
+      }
+      if (state.general.trim()) {
+        any = true;
+        lines.push("## General", "", state.general.trim(), "");
+      }
+      if (!any) lines.push("_No feedback yet._", "");
+      return lines.join("\n").trimEnd() + "\n";
+    }
+
+    const dialog = document.getElementById("export-dialog");
+    function openExport() {
+      document.getElementById("export-preview").textContent = buildMarkdown();
+      dialog.showModal();
+    }
+    document.getElementById("export-btn").addEventListener("click", openExport);
+    document.getElementById("export-btn-2").addEventListener("click", openExport);
+    document.getElementById("dialog-close").addEventListener("click", () => dialog.close());
+    dialog.addEventListener("click", e => { if (e.target === dialog) dialog.close(); });
+
+    document.getElementById("copy-btn").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(buildMarkdown());
+        toast("Copied Markdown to clipboard");
+        dialog.close();
+      } catch {
+        const pre = document.getElementById("export-preview");
+        const range = document.createRange();
+        range.selectNodeContents(pre);
+        const sel = getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        toast("Clipboard blocked — text selected, press ⌘C");
+      }
+    });
+
+    const served = location.protocol.startsWith("http");
+
+    document.getElementById("reset-btn").addEventListener("click", () => {
+      state = { tickets: {}, general: "", notes: {} };
+      save();
+      render();
+      toast("Feedback cleared");
+    });
+
+    document.addEventListener("keydown", e => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "e") { e.preventDefault(); openExport(); }
+    });
+
+    let toastTimer;
+    function toast(msg) {
+      const el = document.getElementById("toast");
+      document.getElementById("toast-text").textContent = msg;
+      el.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+    }
+
+    // ---- Small screens: the task map is a left-edge tab that opens for one click ----
+    const sideNav = document.getElementById("side-nav");
+    const navToggle = document.getElementById("nav-toggle");
+    function setNavOpen(on) {
+      sideNav.classList.toggle("open", on);
+      navToggle.setAttribute("aria-expanded", String(on));
+    }
+    navToggle.addEventListener("click", () => setNavOpen(!sideNav.classList.contains("open")));
+    sideNav.addEventListener("click", e => { if (e.target.closest("a")) setNavOpen(false); });
+    document.addEventListener("click", e => {
+      if (!e.target.closest("#side-nav, #nav-toggle")) setNavOpen(false);
+    });
+    document.addEventListener("keydown", e => { if (e.key === "Escape") setNavOpen(false); });
+
+    // ---- Ask mode: click anything, write a question, copy a prompt for the agent chat ----
+    const ASK_TARGETS = [
+      ".cl", ".file-row", ".file-tab", ".file-head", ".file-panel", ".ac", ".desc-block", ".ticket-head", ".fv-head",
+      ".note-item", ".tracker-row", ".section-label", ".ac-label", ".hero", ".ticket"
+    ];
+    const askFab = document.getElementById("ask-fab");
+    const askPop = document.getElementById("ask-pop");
+    const askInput = document.getElementById("ask-input");
+    let askOn = false, askCtx = null, askHover = null, askTargetEl = null;
+
+    const squash = (s, n = 280) => { const t = (s || "").replace(/\s+/g, " ").trim(); return t.length > n ? t.slice(0, n) + "…" : t; };
+
+    function resolveAsk(target) {
+      if (!target || target.closest(".ask-ui, .topbar, dialog, .toast, .sheet, .clear-fab, .nav-toggle, .feedback-tab")) return null;
+      for (const sel of ASK_TARGETS) {
+        const el = target.closest(sel);
+        if (el) return el;
+      }
+      return target.closest("main") ? target : null;
+    }
+
+    function describeAsk(el) {
+      const article = el.closest(".ticket, .fv");
+      const ticket = article ? PLAN.tickets.find(t => t.id === article.dataset.id) : null;
+      const src = ticket?.line ? `${PLAN.source}:${ticket.line}` : PLAN.source;
+      const base = { source: src, ticket };
+      if (el.matches(".cl")) {
+        const panel = el.closest(".file-panel");
+        const f = ticket.files[Number(panel.dataset.file)];
+        const n = [...panel.querySelectorAll(".cl")].indexOf(el) + 1;
+        return { ...base, where: `${ticket.id} › Files affected › ${f.path} (${f.status}) › ${f.lang === "diff" ? "diff " : ""}line ${n}`, snippet: el.querySelector(".ct").textContent };
+      }
+      if (el.matches(".file-row, .file-tab, .file-head, .file-panel")) {
+        const i = Number(el.dataset.file ?? el.closest(".file-panel")?.dataset.file);
+        const f = ticket.files[i];
+        const code = f.code ? `\n${f.code.split("\n").slice(0, 6).join("\n")}` : "";
+        return { ...base, where: `${ticket.id} › Files affected › ${f.path} (${f.status})`, snippet: el.matches(".file-panel") ? squash(f.code) : f.path + code };
+      }
+      if (el.matches(".ac")) {
+        const i = Number(el.dataset.index);
+        return { ...base, where: `${ticket.id} › Acceptance criterion ${i + 1}`, snippet: ticket.criteria[i].text };
+      }
+      if (el.matches(".desc-block")) {
+        const i = Number(el.dataset.blockIndex);
+        const b = ticket.description[i];
+        return { ...base, where: `${ticket.id} › Description › ${b.type === "code" ? "code block" : "paragraph"} ${i + 1}`, snippet: b.type === "code" ? b.code : b.text };
+      }
+      if (el.matches(".ticket-head, .fv-head")) return { ...base, where: `${ticket.id} › Title`, snippet: `${ticket.id}: ${ticket.title}` };
+      if (el.matches(".ticket")) return { ...base, where: `${ticket.id} · ${ticket.title}`, snippet: ticket.title };
+      if (el.matches(".note-item")) {
+        const i = Number(el.dataset.index);
+        return { source: PLAN.source, where: `Notes › item ${i + 1}`, snippet: PLAN.notes[i] };
+      }
+      if (el.matches(".tracker-row")) {
+        const id = el.getAttribute("href").slice(1);
+        const t = PLAN.tickets.find(x => x.id === id);
+        return { source: t.line ? `${PLAN.source}:${t.line}` : PLAN.source, where: `Progress tracker › ${t.id}`, snippet: `${t.id}: ${t.title} (${t.done ? "Done" : "Todo"})` };
+      }
+      if (el.matches(".hero")) return { source: PLAN.source, where: "Intro", snippet: `${PLAN.shortTitle} — ${PLAN.intro}` };
+      return { source: PLAN.source, where: `Page › ${el.className ? "." + String(el.className).split(" ")[0] : el.tagName.toLowerCase()}`, snippet: el.textContent };
+    }
+
+    function setAsk(on) {
+      askOn = on;
+      document.body.classList.toggle("ask-mode", on);
+      askFab.setAttribute("aria-pressed", String(on));
+      if (!on) { closeAsk(); clearAskHover(); }
+    }
+    function clearAskHover() { askHover?.classList.remove("ask-hover"); askHover = null; }
+    function closeAsk() {
+      askPop.hidden = true;
+      askTargetEl?.classList.remove("ask-target");
+      askTargetEl = null; askCtx = null;
+    }
+
+    function openAsk(el, x, y) {
+      closeAsk();
+      clearAskHover();
+      askCtx = describeAsk(el);
+      askTargetEl = el;
+      el.classList.add("ask-target");
+      document.getElementById("ask-where").textContent = `${askCtx.where}  ·  ${askCtx.source}`;
+      document.getElementById("ask-snippet").textContent = squash(askCtx.snippet);
+      askInput.value = "";
+      askPop.hidden = false;
+      const w = askPop.offsetWidth, h = askPop.offsetHeight;
+      askPop.style.left = Math.max(12, Math.min(x, innerWidth - w - 12)) + "px";
+      askPop.style.top = (y + 16 + h > innerHeight ? Math.max(12, y - h - 12) : y + 16) + "px";
+      autosize(askInput);
+      askInput.focus();
+    }
+
+    function buildAskPrompt(question) {
+      const c = askCtx;
+      const quote = (c.snippet || "").split("\n").slice(0, 12).map(l => `> ${l}`).join("\n");
+      return [
+        `Question about the plan (${PLAN.source}, rendered as ${PLAN.rendered}).`,
+        `Location: ${c.where}`,
+        `Source: ${c.source}${c.ticket?.line ? ` (the ${c.ticket.id} section starts at that line of ${PLAN.source})` : ""}`,
+        "",
+        "Selected content:",
+        quote,
+        "",
+        "Question:",
+        question.trim(),
+        "",
+        `Instruction: find the content above in ${PLAN.source} using the location and quoted text, answer my question about it, and don't edit any files unless I ask.`
+      ].join("\n");
+    }
+
+    async function copyText(text) {
+      try { await navigator.clipboard.writeText(text); return true; } catch { }
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch { }
+      ta.remove();
+      return ok;
+    }
+
+    async function submitAsk() {
+      const q = askInput.value.trim();
+      if (!q) { askInput.focus(); return; }
+      const ok = await copyText(buildAskPrompt(q));
+      setAsk(false);
+      toast(ok ? "Question copied — paste it into the agent chat" : "Clipboard blocked — copy failed");
+    }
+
+    askFab.addEventListener("click", () => setAsk(!askOn));
+    document.getElementById("ask-cancel").addEventListener("click", () => closeAsk());
+    document.getElementById("ask-copy").addEventListener("click", submitAsk);
+    askInput.addEventListener("input", () => autosize(askInput));
+    askInput.addEventListener("keydown", e => {
+      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); submitAsk(); }
+    });
+
+    document.addEventListener("mouseover", e => {
+      if (!askOn || !askPop.hidden) return;
+      const el = resolveAsk(e.target);
+      if (el === askHover) return;
+      clearAskHover();
+      if (el) { askHover = el; el.classList.add("ask-hover"); }
+    }, true);
+
+    for (const type of ["mousedown", "click"]) {
+      document.addEventListener(type, e => {
+        if (!askOn || e.target.closest(".ask-ui")) return;
+        e.preventDefault();
+        e.stopPropagation();
+        if (type !== "click") return;
+        const el = resolveAsk(e.target);
+        if (el) openAsk(el, e.clientX, e.clientY);
+        else closeAsk();
+      }, true);
+    }
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") {
+        if (askOn) askPop.hidden ? setAsk(false) : closeAsk();
+        else if (viewerOpen) closeViewer();
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === "/") { e.preventDefault(); setAsk(!askOn); }
+    });
+
+    render();
+    if (typeof hljs !== "undefined") hljs.highlightAll();
+
+    if (served) {
+      document.getElementById("hint").innerHTML = 'Live · regenerates when <code>PLAN.md</code> changes · <kbd>⌘</kbd> <kbd>E</kbd> to export';
+      const build = document.documentElement.dataset.build;
+      setInterval(async () => {
+        try {
+          const res = await fetch(location.pathname, { cache: "no-store", headers: { Range: "bytes=0-400" } });
+          const head = await res.text();
+          const m = head.match(/data-build="([^"]+)"/);
+          if (m && m[1] !== build) location.reload();
+        } catch { }
+      }, 1000);
+    }
+  </script>
+</body>
+
+</html>
