@@ -21,13 +21,15 @@ It's a very lightweight framework for SDD (Spec-Driven Development) using skills
 - **Your pace.** Let the agent implement the whole plan in one go, or go task by task so each change stays small and easy to review.
 - **Visual plan review.** The agent builds a `PLAN.html` page that you can review in the browser. Instead of looking at boring markdown files, you can comfortably review the plan and collaborate with the agent by copy-pasting feedback to the chat.
 
+Check out the [live demo](https://vguleaev.github.io/one-plan-skills/examples/PLAN.html) to see how it works.
+
 ## Install
 
 ```sh
-npx skills add vguleaev/one-plan-skills --all
+npx skills add vguleaev/one-plan-skills --skill '*'
 ```
 
-The `skills` CLI copies the skills to the folder each agent expects. `--all` installs every skill without asking you to pick.
+The `skills` CLI copies the skills to the folder each agent expects. `--skill '*'` installs every skill without asking you to pick.
 
 ## Skills
 
