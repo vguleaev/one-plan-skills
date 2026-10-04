@@ -4,21 +4,26 @@
 
 # one-plan-skills
 
-Just **one** `PLAN.md`**. Agent Skills for lightweight spec-driven development.**
+**Just one** `PLAN.md`**. Agent Skills for lightweight spec-driven development.**
 
-Agent Skills ([spec](https://agentskills.io/specification)) to generate a `PLAN.md` file with multiple tasks. They work in any agent that supports the Agent Skills format (Claude Code, Cursor, Codex CLI, GitHub Copilot, Gemini CLI, ...).
+One Plan - a collection of agent skills ([spec](https://agentskills.io/specification)) to generate a `PLAN.md` file with detailed tasks.
+
+It works with any agent that supports the Agent Skills format _(Claude Code, Cursor, Codex CLI, GitHub Copilot, Gemini CLI, etc)_.
 
 ## Core idea
 
-> One feature, one `PLAN.md`. Simple workflow for AI agentic engineering.
+> One feature, one `PLAN.md`. Simple workflow for agentic engineering and SDD.
 
-This is [spec-driven development](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html) (write the spec first, then let the agent) without the heavy workflow: one Markdown file instead of a folder of requirements, design and task documents.
+Agentic engineering needs structure and simplicity. With **One Plan**, all your work is stored in one `.md` file. No more dozens of markdown files, specs and folders.
 
-It's a very lightweight framework for SDD (Spec-Driven Development) using skills:
+[Spec-driven development](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html) without the overhead. Your spec and tasks in one place. Agents execute. You stay in control.
+
+The core idea resolves around the concept of single disposable plan for a feature.
 
 - **One feature, one plan.** Create `PLAN.md` when you start a feature and throw it away when the feature is done. There's no need to commit it; the code and its tests are what stay.
 - **Every task is verifiable.** Each task has acceptance criteria, and the agent checks them against the code before marking the task done.
 - **Your pace.** Let the agent implement the whole plan in one go, or go task by task so each change stays small and easy to review.
+- **Saved progress.** Do some work and come back later. Open new session in any coding agent and it will continue where you left off.
 - **Visual plan review.** The agent builds a `PLAN.html` page that you can review in the browser. Instead of looking at boring markdown files, you can comfortably review the plan and collaborate with the agent by copy-pasting feedback to the chat.
 
 Check out the [live demo](https://vguleaev.github.io/one-plan-skills/examples/PLAN.html) to see how it works.
@@ -29,25 +34,23 @@ Check out the [live demo](https://vguleaev.github.io/one-plan-skills/examples/PL
 npx skills add vguleaev/one-plan-skills --skill '*'
 ```
 
-The `skills` CLI copies the skills to the folder each agent expects. `--skill '*'` installs every skill without asking you to pick.
-
 ## Skills
 
 | Skill                 | What it does                                                           | Example                                 |
 | --------------------- | ---------------------------------------------------------------------- | --------------------------------------- |
 | `one-plan-init`       | Create `PLAN.md` for a feature, with tasks and acceptance criteria     | `/one-plan-init Implement OAuth2 login` |
-| `one-plan-add-task`   | Add a task to an existing `PLAN.md`                                    | `/one-plan-add-task Configure Tailwind` |
+| `one-plan-review`     | Build an HTML review page from `PLAN.md` and collect per-task feedback | `/one-plan-review`                      |
 | `one-plan-start-task` | Work on a task, ticking criteria as they are met                       | `/one-plan-start-task T-002`            |
 | `one-plan-check-task` | Verify a task's criteria and mark it done                              | `/one-plan-check-task T-002`            |
-| `one-plan-review`     | Build an HTML review page from `PLAN.md` and collect per-task feedback | `/one-plan-review`                      |
+| `one-plan-add-task`   | Add a task to an existing `PLAN.md`                                    | `/one-plan-add-task Configure Tailwind` |
 
-The examples use the `/name` syntax of Claude Code and Cursor. In Codex, use `$name`.
-
-The first four skills only run when you ask for them. `one-plan-review` can also start on its own, for example when you ask to review the plan.
+_To invoke a skill, use the `/skillName` syntax of Claude Code and Cursor. In Codex, use `$skillName`._
 
 ## Usage
 
 The skills follow a simple agentic engineering loop: **Plan → Review plan → Give feedback → Implement**. You stay in control of what gets built, and the agent does the typing.
+
+Your journey starts with a skill to create a plan `.md` file.
 
 1. Plan a feature:
 
@@ -73,16 +76,16 @@ The skills follow a simple agentic engineering loop: **Plan → Review plan → 
  /one-plan-check-task T-001
 ```
 
-You can also just ask in plain words, for example "Start working on T-003 and check whether T-002 is done". Every `PLAN.md` ends with an `## Agent Instructions` section that tells the agent how to use it.
+You can also just ask in plain words, for example "Start working on T-003 and check whether T-002 is done".
 
-## What's in [PLAN.md](http://PLAN.md)
+## What's in Plan?
 
 - A **Progress Tracker** table with every task and its status (`🔲 TODO` or `✅ DONE`)
 - A section per task with a unique `T-<number>` ID, a description and acceptance criteria as checkboxes
 - An optional **Files affected** list per task, with the new or changed code
 - A **Notes** section for decisions and scope
 
-## Example
+## Examples
 
 - [examples/PLAN.md](examples/PLAN.md): a plan created with `one-plan-init` and worked through with the other skills.
 - [Live review page](https://vguleaev.github.io/one-plan-skills/examples/PLAN.html): the `PLAN.html` that `one-plan-review` builds from it.
@@ -90,6 +93,8 @@ You can also just ask in plain words, for example "Start working on T-003 and ch
 ## Keep progress up to date
 
 `one-plan-init` offers to add a short rules snippet to your `AGENTS.md` or `CLAUDE.md`, so the agent ticks criteria and marks tasks done even when you don't call a skill. You can also paste [the snippet](skills/one-plan-init/assets/agent-rules-snippet.md) yourself. This is optional, because every `PLAN.md` already carries its own Agent Instructions.
+
+Learn more [here](https://agents.md/)
 
 ## Like it?
 
